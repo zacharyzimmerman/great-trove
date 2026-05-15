@@ -1,0 +1,14 @@
+{
+  "name": "great-trove",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bundle": "node scripts/bundle-data.js",
+    "bump": "node scripts/bump-version.js",
+    "dev": "node web/server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.0.0"
+  }
+}

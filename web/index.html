@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f0f13">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Great Trove">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <title>Great Trove</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zacharyzimmerman/great-apps@main/framework.css">
+  <link rel="stylesheet" href="styles.css?v=0.1.0">
+</head>
+<body>
+  <!-- Contest List View (default) -->
+  <div id="list-view" class="view">
+    <header class="list-header">
+      <div class="header-row">
+        <h1>Great<span class="header-accent">Trove</span></h1>
+        <button id="search-toggle" class="icon-btn" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <div id="search-bar" class="search-bar" hidden>
+        <input type="text" id="search" placeholder="Search groups, locations..." autocomplete="off">
+        <select id="year-filter"><option value="">All Years</option></select>
+        <select id="season-filter">
+          <option value="">All Seasons</option>
+          <option value="International">International</option>
+          <option value="Fall">Fall</option>
+          <option value="Spring">Spring</option>
+          <option value="MidWinter">MidWinter</option>
+        </select>
+        <select id="category-filter">
+          <option value="">All Categories</option>
+          <option value="Quartet">Quartet</option>
+          <option value="Chorus">Chorus</option>
+          <option value="Seniors">Seniors</option>
+          <option value="Mixed">Mixed</option>
+        </select>
+      </div>
+    </header>
+    <div id="contest-list" class="item-list"></div>
+    <footer class="list-footer">
+      <span id="contest-count"></span>
+      <span class="version-label">v0.1.0</span>
+    </footer>
+  </div>
+
+  <!-- Contest Detail View -->
+  <div id="contest-view" class="view" hidden>
+    <header class="detail-header">
+      <button id="contest-back-btn" class="back-btn" aria-label="Back to list">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+    </header>
+    <div class="detail-body">
+      <h2 id="contest-title"></h2>
+      <div class="detail-meta">
+        <span class="meta-text" id="contest-location"></span>
+        <span class="meta-text" id="contest-date"></span>
+      </div>
+      <a id="contest-source-link" class="source-link" href="#" target="_blank" rel="noopener" hidden>View Source</a>
+      <div id="contest-note" class="content-section contest-note" hidden></div>
+      <div id="scores-section" class="content-section"></div>
+      <details id="judges-section" class="content-section collapsible-section" hidden>
+        <summary>Judges</summary>
+        <div id="judges-content"></div>
+      </details>
+      <details id="annotations-section" class="content-section collapsible-section" hidden>
+        <summary>Annotations</summary>
+        <div id="annotations-content"></div>
+      </details>
+      <details id="appearances-section" class="content-section collapsible-section" hidden>
+        <summary>Order of Appearance</summary>
+        <div id="appearances-content"></div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Group Detail View -->
+  <div id="group-view" class="view" hidden>
+    <header class="detail-header">
+      <button id="group-back-btn" class="back-btn" aria-label="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+    </header>
+    <div class="detail-body">
+      <h2 id="group-name"></h2>
+      <div class="detail-meta" id="group-meta"></div>
+      <div id="group-stats" class="content-section"></div>
+      <div id="group-history" class="content-section"></div>
+    </div>
+  </div>
+
+  <!-- Judge Detail View -->
+  <div id="judge-view" class="view" hidden>
+    <header class="detail-header">
+      <button id="judge-back-btn" class="back-btn" aria-label="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+    </header>
+    <div class="detail-body">
+      <h2 id="judge-name"></h2>
+      <div class="detail-meta" id="judge-meta"></div>
+      <div id="judge-history" class="content-section"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/zacharyzimmerman/great-apps@main/framework.js"></script>
+  <script src="app.js?v=0.1.0"></script>
+</body>
+</html>
