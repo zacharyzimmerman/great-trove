@@ -7,6 +7,7 @@ let bundle = null;          // raw bundle data
 let contestsById = {};      // id → contest
 let groupsById = {};        // id → group object
 let judgeIndex = {};        // normalized name → [{contest, role, district}]
+let arrangerIndex = {};     // normalized name → {displayName, entries: [{songName, groupId, contestId}]}
 let navStack = [];          // history for back navigation
 
 // ── Data Loading ────────────────────────────────────────
@@ -61,6 +62,26 @@ function buildIndexes() {
         district: j.district,
         name: j.name,
       });
+    }
+  }
+
+  // Arranger index: normalized name → array of {songName, groupId, contestId}
+  arrangerIndex = {};
+  for (const contest of bundle.contests) {
+    if (!contest.scores) continue;
+    for (const score of contest.scores) {
+      if (!score.songs) continue;
+      for (const song of score.songs) {
+        if (!song.arranger) continue;
+        const key = normalizeName(song.arranger);
+        if (!arrangerIndex[key]) arrangerIndex[key] = [];
+        arrangerIndex[key].push({
+          songName: song.name,
+          groupId: score.groupId,
+          contestId: contest.id,
+          name: song.arranger,
+        });
+      }
     }
   }
 }
@@ -290,11 +311,16 @@ function renderScoresTable(contest) {
     html += `<td class="col-num" style="font-weight:600">${score.total != null ? score.total : "—"}</td>`;
 
     if (hasSongs) {
-      const songNames = (score.songs || [])
+      const songParts = (score.songs || [])
         .sort((a, b) => (a.order || 0) - (b.order || 0))
-        .map((s) => s.name)
-        .join(", ");
-      html += `<td class="songs-cell" title="${escAttr(songNames)}">${escHtml(songNames)}</td>`;
+        .map((s) => {
+          let part = escHtml(s.name);
+          if (s.arranger) {
+            part += ` <span class="song-arranger">[<span class="entity-link" data-type="arranger" data-name="${escAttr(s.arranger)}">${escHtml(s.arranger)}</span>]</span>`;
+          }
+          return part;
+        });
+      html += `<td class="songs-cell">${songParts.join("; ")}</td>`;
     }
 
     html += "</tr>";
@@ -529,6 +555,78 @@ function showJudge(name) {
   GreatApp.showView("#judge-view");
 }
 
+// ── Arranger Detail ────────────────────────────────────
+function showArranger(name) {
+  const key = normalizeName(name);
+  const entries = arrangerIndex[key];
+  if (!entries || !entries.length) return;
+
+  const displayName = entries[0].name;
+  $("#arranger-name").textContent = displayName;
+
+  // Stats
+  const uniqueSongs = [...new Set(entries.map((e) => e.songName))];
+  const uniqueGroups = [...new Set(entries.map((e) => e.groupId))];
+  const statsEl = $("#arranger-stats");
+  statsEl.innerHTML = `
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value">${uniqueSongs.length}</div>
+        <div class="stat-label">Songs</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${uniqueGroups.length}</div>
+        <div class="stat-label">Groups</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${entries.length}</div>
+        <div class="stat-label">Performances</div>
+      </div>
+    </div>`;
+
+  // Songs table grouped by song name
+  const songMap = {};
+  for (const entry of entries) {
+    if (!songMap[entry.songName]) songMap[entry.songName] = [];
+    songMap[entry.songName].push(entry);
+  }
+
+  let html = "";
+  for (const [songName, performances] of Object.entries(songMap).sort((a, b) => a[0].localeCompare(b[0]))) {
+    html += `<div class="arranger-song-group">`;
+    html += `<div class="arranger-song-title">${escHtml(songName)}</div>`;
+    html += `<table class="history-table"><thead><tr>`;
+    html += `<th>Year</th><th>Group</th><th>Season</th><th>Category</th><th>Round</th>`;
+    html += `</tr></thead><tbody>`;
+
+    // Sort performances by year DESC
+    const sorted = [...performances].sort((a, b) => {
+      const ca = contestsById[a.contestId];
+      const cb = contestsById[b.contestId];
+      return (cb ? cb.year : 0) - (ca ? ca.year : 0);
+    });
+
+    for (const perf of sorted) {
+      const contest = contestsById[perf.contestId];
+      if (!contest) continue;
+      const group = groupsById[perf.groupId];
+      const groupName = group ? group.name : "Unknown";
+      html += `<tr data-contest-id="${contest.id}">`;
+      html += `<td>${contest.year}</td>`;
+      html += `<td><span class="entity-link" data-type="group" data-id="${perf.groupId}">${escHtml(groupName)}</span></td>`;
+      html += `<td>${escHtml(contest.season || "")}</td>`;
+      html += `<td>${escHtml(contest.category || "")}</td>`;
+      html += `<td>${escHtml(contest.round || "")}</td>`;
+      html += `</tr>`;
+    }
+
+    html += `</tbody></table></div>`;
+  }
+
+  $("#arranger-songs").innerHTML = html;
+  GreatApp.showView("#arranger-view");
+}
+
 // ── Navigation ──────────────────────────────────────────
 function navigateTo(type, id, { pushHistory = true } = {}) {
   const hash = `#${type}/${encodeURIComponent(id)}`;
@@ -546,6 +644,9 @@ function navigateTo(type, id, { pushHistory = true } = {}) {
       break;
     case "judge":
       showJudge(id);
+      break;
+    case "arranger":
+      showArranger(id);
       break;
     default:
       showListView();
@@ -590,6 +691,8 @@ document.addEventListener("click", (e) => {
       navigateTo("group", entityLink.dataset.id);
     } else if (type === "judge") {
       navigateTo("judge", entityLink.dataset.name);
+    } else if (type === "arranger") {
+      navigateTo("arranger", entityLink.dataset.name);
     }
     return;
   }
@@ -659,6 +762,7 @@ function init() {
   $("#contest-back-btn").addEventListener("click", () => history.back());
   $("#group-back-btn").addEventListener("click", () => history.back());
   $("#judge-back-btn").addEventListener("click", () => history.back());
+  $("#arranger-back-btn").addEventListener("click", () => history.back());
 
   // Search toggle (framework helper)
   GreatApp.initSearchToggle("#search-toggle", "#search-bar", "#search");

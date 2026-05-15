@@ -128,9 +128,12 @@
   font-size: 0.72rem;
   color: rgba(255, 255, 255, 0.5);
   max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+}
+
+/* Song arranger in scores table */
+.song-arranger {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 /* ── Collapsible sections ────────────────────────────── */
@@ -283,6 +286,18 @@
   background: rgba(124, 111, 255, 0.08);
 }
 
+/* ── Arranger detail ─────────────────────────────────── */
+.arranger-song-group {
+  margin-bottom: 20px;
+}
+.arranger-song-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
+  padding-left: 2px;
+}
+
 /* ── Judge detail ────────────────────────────────────── */
 .judge-district-pill {
   display: inline-block;
@@ -324,7 +339,7 @@
     min-width: 32px;
   }
   .songs-cell {
-    max-width: 120px;
+    max-width: 140px;
     font-size: 0.65rem;
   }
   .winner-pill {
