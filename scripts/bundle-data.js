@@ -88,6 +88,17 @@ const allGroups = db.prepare(`
   SELECT id, name, city, state, type FROM groups
 `).all();
 
+// Members table may not exist yet (requires barbershop-database schema update).
+// Query gracefully — return empty array if table is missing.
+let allMembers = [];
+try {
+  allMembers = db.prepare(`
+    SELECT score_id, name, part FROM members ORDER BY score_id, part
+  `).all();
+} catch (_) {
+  // Table doesn't exist yet — that's fine
+}
+
 db.close();
 
 // -- Index bulk data by parent key -----------------------------------------
@@ -110,6 +121,7 @@ const songCatsBySong = groupBy(allSongCategories, 'song_id');
 const judgesByContest = groupBy(allJudges, 'contest_id');
 const annotationsByContest = groupBy(allAnnotations, 'contest_id');
 const appearancesByContest = groupBy(allAppearances, 'contest_id');
+const membersByScore = groupBy(allMembers, 'score_id');
 
 // -- Build categories object from rows ------------------------------------
 
@@ -143,6 +155,12 @@ const bundledContests = contests.map((c) => {
       categories: buildCategories(songCatsBySong.get(song.id)),
     }));
 
+    // Members (quartet personnel) — omit key entirely if none
+    const memberRows = membersByScore.get(s.id);
+    const members = memberRows
+      ? memberRows.map((m) => ({ name: m.name, part: m.part }))
+      : undefined;
+
     return {
       groupId: s.group_id,
       placement: s.placement,
@@ -153,6 +171,7 @@ const bundledContests = contests.map((c) => {
       note: s.note,
       categories: buildCategories(scoreCatsByScore.get(s.id)),
       songs,
+      ...(members && { members }),
     };
   });
 
@@ -246,6 +265,9 @@ console.log(`  Scores:      ${totalScores}`);
 console.log(`  Groups:      ${groupCount}`);
 console.log(`  Judges:      ${totalJudges}`);
 console.log(`  Annotations: ${totalAnnotations}`);
+if (allMembers.length) {
+  console.log(`  Members:     ${allMembers.length}`);
+}
 console.log(`  File size:   ${formatBytes(sizeBytes)}`);
 console.log();
 console.log(`Wrote ${OUT_PATH}`);

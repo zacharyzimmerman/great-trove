@@ -234,6 +234,25 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
+/* Group members roster */
+.group-members-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.group-members-list {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.8;
+}
+.member-part-tag {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+}
+
 /* Stats summary */
 .stats-row {
   display: flex;
@@ -307,6 +326,39 @@
   font-weight: 600;
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Member detail ───────────────────────────────────── */
+.member-part-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  background: rgba(124, 111, 255, 0.12);
+  color: rgba(124, 111, 255, 0.85);
+}
+.member-group-section {
+  margin-bottom: 20px;
+}
+.member-group-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
+  padding-left: 2px;
+}
+
+/* Member names in scores table */
+.score-members {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.score-members .member-name {
+  font-size: 0.68rem;
 }
 
 /* ── Empty state ─────────────────────────────────────── */

@@ -8,6 +8,7 @@ let contestsById = {};      // id → contest
 let groupsById = {};        // id → group object
 let judgeIndex = {};        // normalized name → [{contest, role, district}]
 let arrangerIndex = {};     // normalized name → {displayName, entries: [{songName, groupId, contestId}]}
+let memberIndex = {};       // normalized name → [{groupId, contestId, part, name}]
 let navStack = [];          // history for back navigation
 
 // ── Data Loading ────────────────────────────────────────
@@ -80,6 +81,25 @@ function buildIndexes() {
           groupId: score.groupId,
           contestId: contest.id,
           name: song.arranger,
+        });
+      }
+    }
+  }
+
+  // Member index: normalized name → array of {groupId, contestId, part, name}
+  memberIndex = {};
+  for (const contest of bundle.contests) {
+    if (!contest.scores) continue;
+    for (const score of contest.scores) {
+      if (!score.members) continue;
+      for (const m of score.members) {
+        const key = normalizeName(m.name);
+        if (!memberIndex[key]) memberIndex[key] = [];
+        memberIndex[key].push({
+          groupId: score.groupId,
+          contestId: contest.id,
+          part: m.part,
+          name: m.name,
         });
       }
     }
@@ -301,7 +321,16 @@ function renderScoresTable(contest) {
 
     html += "<tr>";
     html += `<td class="${plClass}">${score.placement || "—"}</td>`;
-    html += `<td><span class="entity-link" data-type="group" data-id="${score.groupId}">${escHtml(groupName)}</span></td>`;
+
+    // Group cell — include member names if available
+    let groupCell = `<span class="entity-link" data-type="group" data-id="${score.groupId}">${escHtml(groupName)}</span>`;
+    if (score.members && score.members.length) {
+      const memberLinks = score.members.map((m) =>
+        `<span class="entity-link member-name" data-type="member" data-name="${escAttr(m.name)}">${escHtml(m.name)}</span>`
+      ).join(", ");
+      groupCell += `<div class="score-members">${memberLinks}</div>`;
+    }
+    html += `<td>${groupCell}</td>`;
 
     for (const cat of catKeys) {
       const val = score.categories ? score.categories[cat] : null;
@@ -476,6 +505,29 @@ function showGroup(groupId) {
     statsEl.innerHTML = "";
   }
 
+  // Members — collect unique members across all appearances
+  const membersEl = $("#group-members");
+  const memberSet = {};  // normalized name → {name, parts: Set}
+  for (const { score } of appearances) {
+    if (!score.members) continue;
+    for (const m of score.members) {
+      const key = normalizeName(m.name);
+      if (!memberSet[key]) memberSet[key] = { name: m.name, parts: new Set() };
+      if (m.part) memberSet[key].parts.add(m.part);
+    }
+  }
+  const memberNames = Object.values(memberSet);
+  if (memberNames.length) {
+    const memberHtml = memberNames.map((m) => {
+      const partStr = m.parts.size ? ` <span class="member-part-tag">${escHtml([...m.parts].join(", "))}</span>` : "";
+      return `<span class="entity-link" data-type="member" data-name="${escAttr(m.name)}">${escHtml(m.name)}</span>${partStr}`;
+    }).join(" · ");
+    membersEl.innerHTML = `<div class="group-members-label">Members</div><div class="group-members-list">${memberHtml}</div>`;
+    membersEl.hidden = false;
+  } else {
+    membersEl.hidden = true;
+  }
+
   // History table
   const histEl = $("#group-history");
   if (!appearances.length) {
@@ -627,6 +679,101 @@ function showArranger(name) {
   GreatApp.showView("#arranger-view");
 }
 
+// ── Member Detail ──────────────────────────────────────
+function showMember(name) {
+  const key = normalizeName(name);
+  const entries = memberIndex[key];
+  if (!entries || !entries.length) return;
+
+  const displayName = entries[0].name;
+  $("#member-name").textContent = displayName;
+
+  // Part pill — use the most common part
+  const metaEl = $("#member-meta");
+  const parts = entries.map((e) => e.part).filter(Boolean);
+  const topPart = mode(parts);
+  if (topPart) {
+    metaEl.innerHTML = `<span class="member-part-pill">${escHtml(topPart)}</span>`;
+  } else {
+    metaEl.innerHTML = "";
+  }
+
+  // Deduplicate by group — collect unique groups with their contest history
+  const groupMap = {};
+  for (const entry of entries) {
+    const gid = entry.groupId;
+    if (!groupMap[gid]) groupMap[gid] = [];
+    groupMap[gid].push(entry);
+  }
+
+  // Stats
+  const uniqueGroups = Object.keys(groupMap);
+  const years = entries.map((e) => {
+    const c = contestsById[e.contestId];
+    return c ? c.year : null;
+  }).filter(Boolean);
+  const statsEl = $("#member-stats");
+  statsEl.innerHTML = `
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value">${uniqueGroups.length}</div>
+        <div class="stat-label">Group${uniqueGroups.length !== 1 ? "s" : ""}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${entries.length}</div>
+        <div class="stat-label">Contest Appearances</div>
+      </div>
+      ${years.length ? `<div class="stat-item">
+        <div class="stat-value">${Math.min(...years)}–${Math.max(...years)}</div>
+        <div class="stat-label">Years Active</div>
+      </div>` : ""}
+    </div>`;
+
+  // History table grouped by group
+  let html = "";
+  for (const gid of uniqueGroups) {
+    const group = groupsById[gid];
+    const groupName = group ? group.name : `Group #${gid}`;
+    const gEntries = groupMap[gid];
+
+    html += `<div class="member-group-section">`;
+    html += `<div class="member-group-title"><span class="entity-link" data-type="group" data-id="${gid}">${escHtml(groupName)}</span></div>`;
+    html += `<table class="history-table"><thead><tr>`;
+    html += `<th>Year</th><th>Season</th><th>Category</th><th>Round</th><th>Pl</th><th>Part</th>`;
+    html += `</tr></thead><tbody>`;
+
+    // Sort by year DESC
+    const sorted = [...gEntries].sort((a, b) => {
+      const ca = contestsById[a.contestId];
+      const cb = contestsById[b.contestId];
+      return (cb ? cb.year : 0) - (ca ? ca.year : 0);
+    });
+
+    for (const entry of sorted) {
+      const contest = contestsById[entry.contestId];
+      if (!contest) continue;
+      // Find the score for this group in this contest to get placement
+      const score = (contest.scores || []).find((s) => String(s.groupId) === String(gid));
+      const pl = score ? score.placement : null;
+      const plClass = placementClass(pl);
+
+      html += `<tr data-contest-id="${contest.id}">`;
+      html += `<td>${contest.year}</td>`;
+      html += `<td>${escHtml(contest.season || "")}</td>`;
+      html += `<td>${escHtml(contest.category || "")}</td>`;
+      html += `<td>${escHtml(contest.round || "")}</td>`;
+      html += `<td class="${plClass}">${pl || "—"}</td>`;
+      html += `<td>${escHtml(entry.part || "")}</td>`;
+      html += `</tr>`;
+    }
+
+    html += `</tbody></table></div>`;
+  }
+
+  $("#member-history").innerHTML = html;
+  GreatApp.showView("#member-view");
+}
+
 // ── Navigation ──────────────────────────────────────────
 function navigateTo(type, id, { pushHistory = true } = {}) {
   const hash = `#${type}/${encodeURIComponent(id)}`;
@@ -647,6 +794,9 @@ function navigateTo(type, id, { pushHistory = true } = {}) {
       break;
     case "arranger":
       showArranger(id);
+      break;
+    case "member":
+      showMember(id);
       break;
     default:
       showListView();
@@ -693,6 +843,8 @@ document.addEventListener("click", (e) => {
       navigateTo("judge", entityLink.dataset.name);
     } else if (type === "arranger") {
       navigateTo("arranger", entityLink.dataset.name);
+    } else if (type === "member") {
+      navigateTo("member", entityLink.dataset.name);
     }
     return;
   }
@@ -763,6 +915,7 @@ function init() {
   $("#group-back-btn").addEventListener("click", () => history.back());
   $("#judge-back-btn").addEventListener("click", () => history.back());
   $("#arranger-back-btn").addEventListener("click", () => history.back());
+  $("#member-back-btn").addEventListener("click", () => history.back());
 
   // Search toggle (framework helper)
   GreatApp.initSearchToggle("#search-toggle", "#search-bar", "#search");

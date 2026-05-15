@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <title>Great Trove</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/zacharyzimmerman/great-apps@main/framework.css">
-  <link rel="stylesheet" href="styles.css?v=0.1.0">
+  <link rel="stylesheet" href="styles.css?v=0.2.0">
 </head>
 <body>
   <!-- Contest List View (default) -->
@@ -46,7 +46,7 @@
     <div id="contest-list" class="item-list"></div>
     <footer class="list-footer">
       <span id="contest-count"></span>
-      <span class="version-label">v0.1.0</span>
+      <span class="version-label">v0.2.0</span>
     </footer>
   </div>
 
@@ -94,6 +94,7 @@
       <h2 id="group-name"></h2>
       <div class="detail-meta" id="group-meta"></div>
       <div id="group-stats" class="content-section"></div>
+      <div id="group-members" class="content-section" hidden></div>
       <div id="group-history" class="content-section"></div>
     </div>
   </div>
@@ -128,7 +129,23 @@
     </div>
   </div>
 
+  <!-- Member Detail View -->
+  <div id="member-view" class="view" hidden>
+    <header class="detail-header">
+      <button id="member-back-btn" class="back-btn" aria-label="Back">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+    </header>
+    <div class="detail-body">
+      <h2 id="member-name"></h2>
+      <div class="detail-meta" id="member-meta"></div>
+      <div id="member-stats" class="content-section"></div>
+      <div id="member-history" class="content-section"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/gh/zacharyzimmerman/great-apps@main/framework.js"></script>
-  <script src="app.js?v=0.1.0"></script>
+  <script src="app.js?v=0.2.0"></script>
 </body>
 </html>
