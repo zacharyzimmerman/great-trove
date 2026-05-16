@@ -180,7 +180,7 @@ function buildIndexes() {
   }
 
   // Deduplicate rounds within each event and sort by round order
-  const roundOrder = { "QuarterFinal": 0, "SemiFinal": 1, "Final": 2 };
+  const roundOrder = { "Final": 0, "SemiFinal": 1, "QuarterFinal": 2 };
   for (const event of Object.values(eventsIndex)) {
     // Group by round
     const byRound = {};
@@ -472,7 +472,7 @@ function renderScoresTableInto(container, contest) {
   for (const cat of catKeys) {
     html += `<th class="col-num">${escHtml(cat)}</th>`;
   }
-  html += '<th class="col-num">Total</th>';
+  html += '<th class="col-num">Avg %</th>';
   if (hasSongs) {
     html += "<th>Songs</th>";
   }
@@ -508,7 +508,8 @@ function renderScoresTableInto(container, contest) {
       html += `<td class="col-num">${val != null ? val : "\u2014"}</td>`;
     }
 
-    html += `<td class="col-num" style="font-weight:600">${score.total != null ? score.total : "\u2014"}</td>`;
+    const pct = score.percentage != null ? score.percentage.toFixed(1) + "%" : (score.total != null ? score.total : "\u2014");
+    html += `<td class="col-num" style="font-weight:600">${pct}</td>`;
 
     if (hasSongs) {
       const songParts = (score.songs || [])
