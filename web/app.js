@@ -38,12 +38,27 @@ async function loadBundle() {
   }
 }
 
+function getIntlSubEvent(sourceUrl) {
+  if (!sourceUrl) return "main";
+  const fname = sourceUrl.split("/").pop().toLowerCase();
+  if (fname.includes("nextgen")) return "NextGen Varsity";
+  if (fname.includes("varsity")) return "Varsity";
+  if (fname.includes("comedy")) return "Comedy";
+  if (fname.includes("chorusfestival")) return "Chorus Festival";
+  if (fname.includes("collegiate") || /int\d{2}o?cqt/i.test(fname)) return "Collegiate";
+  if (/int\d{2}y[a-z]/i.test(fname)) return "Youth";
+  if (fname.includes("video_psr")) return "Video";
+  if (fname.includes("consolidated")) return "Consolidated";
+  return "main";
+}
+
 function getEventKey(contest) {
   const { year, season, category, district } = contest;
 
-  // International season: all rounds of same year+category are one event
+  // International season: split by sub-event (Varsity, Comedy, etc.)
   if (season === "International") {
-    return `${year}|International|${category}`;
+    const sub = getIntlSubEvent(contest.sourceUrl);
+    return `${year}|International|${category}|${sub}`;
   }
 
   // Has district: clean grouping
@@ -150,6 +165,7 @@ function buildIndexes() {
         season: contest.season,
         category: contest.category,
         district: contest.district,
+        subEvent: contest.season === "International" ? getIntlSubEvent(contest.sourceUrl) : null,
         location: null,
         contests: [],
       };
@@ -303,6 +319,7 @@ function getEventTitle(event) {
   const parts = [];
   if (event.season) parts.push(event.season);
   if (event.district) parts.push(event.district);
+  if (event.subEvent && event.subEvent !== "main") parts.push(event.subEvent);
   if (event.category) parts.push(event.category);
   return parts.join(" ") || "Contest";
 }
