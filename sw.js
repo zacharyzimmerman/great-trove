@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v0.2.3";
+const CACHE_VERSION = "v0.2.4";
 const CACHE_NAME = "great-trove-" + CACHE_VERSION;
 const ASSETS = [
   "./",
@@ -25,6 +25,9 @@ self.addEventListener("activate", (e) => {
         keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll().then((clients) => {
+        for (const client of clients) client.postMessage({ type: "SW_UPDATED" });
+      }))
   );
 });
 
