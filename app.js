@@ -439,7 +439,7 @@ function showContest(id) {
   // Find which event contains this contest and show the full event
   for (const event of Object.values(eventsIndex)) {
     if (event.contests.some((c) => c.id === Number(id) || c.id === id)) {
-      navigateTo("event", event.key, { pushHistory: true });
+      showEvent(event.key);
       return;
     }
   }
@@ -1108,6 +1108,10 @@ function init() {
       showListView({ pushHistory: false });
     }
   });
+
+  // Default filters: International Quartet
+  $("#season-filter").value = "International";
+  $("#category-filter").value = "Quartet";
 
   // Load data
   loadBundle();
