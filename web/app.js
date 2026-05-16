@@ -9,6 +9,8 @@ let groupsById = {};        // id → group object
 let judgeIndex = {};        // normalized name → [{contest, role, district}]
 let arrangerIndex = {};     // normalized name → {displayName, entries: [{songName, groupId, contestId}]}
 let memberIndex = {};       // normalized name → [{groupId, contestId, part, name}]
+let eventsIndex = {};       // eventKey → event object
+let eventsArray = [];       // sorted array of events
 let navStack = [];          // history for back navigation
 
 // ── Data Loading ────────────────────────────────────────
@@ -34,6 +36,38 @@ async function loadBundle() {
   if (window.location.hash) {
     navigateToHash(window.location.hash, false);
   }
+}
+
+function getEventKey(contest) {
+  const { year, season, category, district } = contest;
+
+  // International season: all rounds of same year+category are one event
+  if (season === "International") {
+    return `${year}|International|${category}`;
+  }
+
+  // Has district: clean grouping
+  if (district) {
+    return `${year}|${season}|${category}|${district}`;
+  }
+
+  // No district: try to extract a stable key from sourceUrl filename
+  if (contest.sourceUrl) {
+    const fname = contest.sourceUrl.split("/").pop()
+      .replace(/\.(pdf|PDF|htm|HTM)$/i, "")
+      .replace(/_Rev\d+$/i, "")
+      .replace(/_Revised$/i, "");
+    // Strip category+round suffix to get event identifier
+    const m = fname.match(/^(.+?)(PQT|DQT|QT|DCH|CH|SR)[FS]?$/i);
+    if (m) {
+      return `${year}|${season}|${category}|url:${m[1].toUpperCase()}`;
+    }
+    // Fallback: use full filename as key
+    return `${year}|${season}|${category}|url:${fname.toUpperCase()}`;
+  }
+
+  // Fallback: each contest is its own event
+  return `${year}|${season}|${category}|id:${contest.id}`;
 }
 
 function buildIndexes() {
@@ -104,6 +138,54 @@ function buildIndexes() {
       }
     }
   }
+
+  // Build events index — group contest rounds into single events
+  eventsIndex = {};
+  for (const contest of bundle.contests) {
+    const key = getEventKey(contest);
+    if (!eventsIndex[key]) {
+      eventsIndex[key] = {
+        key,
+        year: contest.year,
+        season: contest.season,
+        category: contest.category,
+        district: contest.district,
+        location: null,
+        contests: [],
+      };
+    }
+    eventsIndex[key].contests.push(contest);
+    if (contest.location && !eventsIndex[key].location) {
+      eventsIndex[key].location = contest.location;
+    }
+    if (contest.district && !eventsIndex[key].district) {
+      eventsIndex[key].district = contest.district;
+    }
+  }
+
+  // Deduplicate rounds within each event and sort by round order
+  const roundOrder = { "QuarterFinal": 0, "SemiFinal": 1, "Final": 2 };
+  for (const event of Object.values(eventsIndex)) {
+    // Group by round
+    const byRound = {};
+    for (const c of event.contests) {
+      const round = c.round || "_none";
+      if (!byRound[round]) byRound[round] = [];
+      byRound[round].push(c);
+    }
+    // For each round, keep the contest with the most scores (dedup)
+    const deduped = [];
+    for (const contests of Object.values(byRound)) {
+      contests.sort((a, b) => (b.scores?.length || 0) - (a.scores?.length || 0));
+      deduped.push(contests[0]);
+    }
+    // Sort: QuarterFinal → SemiFinal → Final → null
+    deduped.sort((a, b) => (roundOrder[a.round] ?? 3) - (roundOrder[b.round] ?? 3));
+    event.contests = deduped;
+  }
+
+  eventsArray = Object.values(eventsIndex)
+    .sort((a, b) => b.year - a.year || (a.season || "").localeCompare(b.season || ""));
 }
 
 function normalizeName(name) {
@@ -124,7 +206,7 @@ function populateYearFilter() {
 }
 
 // ── Filtering ───────────────────────────────────────────
-function getFilteredContests() {
+function getFilteredEvents() {
   if (!bundle) return [];
 
   const query = $("#search").value.toLowerCase().trim();
@@ -132,51 +214,43 @@ function getFilteredContests() {
   const seasonVal = $("#season-filter").value;
   const categoryVal = $("#category-filter").value;
 
-  return bundle.contests.filter((c) => {
-    if (yearVal && String(c.year) !== yearVal) return false;
-    if (seasonVal && c.season !== seasonVal) return false;
-    if (categoryVal && c.category !== categoryVal) return false;
+  return eventsArray.filter((event) => {
+    if (yearVal && String(event.year) !== yearVal) return false;
+    if (seasonVal && event.season !== seasonVal) return false;
+    if (categoryVal && event.category !== categoryVal) return false;
     if (query) {
-      // Search group names and location
-      const groupNames = (c.scores || [])
-        .map((s) => {
+      const haystack = event.contests.map((c) => {
+        const groupNames = (c.scores || []).map((s) => {
           const g = groupsById[s.groupId];
           return g ? g.name : "";
-        })
-        .join(" ");
-      const haystack = [
-        c.location || "",
-        c.season || "",
-        c.category || "",
-        c.round || "",
-        groupNames,
-      ].join(" ").toLowerCase();
-      return haystack.includes(query);
+        }).join(" ");
+        return [c.location || "", c.season || "", c.category || "", c.round || "", event.district || "", groupNames].join(" ");
+      }).join(" ").toLowerCase();
+      if (!haystack.includes(query)) return false;
     }
     return true;
-  }).sort((a, b) => b.year - a.year || (a.season || "").localeCompare(b.season || ""));
+  });
 }
 
 // ── List Rendering ──────────────────────────────────────
-function renderContestList(contests) {
+function renderEventList(events) {
   const container = $("#contest-list");
   container.innerHTML = "";
 
-  if (!contests.length) {
+  if (!events.length) {
     container.innerHTML = '<div class="empty-state">No contests found</div>';
     $("#contest-count").textContent = "0 contests";
     return;
   }
 
-  for (const contest of contests) {
+  for (const event of events) {
     const row = document.createElement("div");
     row.className = "item-row";
-    row.dataset.id = contest.id;
 
     // Year badge
     const yearBadge = document.createElement("div");
     yearBadge.className = "year-badge";
-    yearBadge.textContent = contest.year;
+    yearBadge.textContent = event.year;
     row.appendChild(yearBadge);
 
     // Info
@@ -185,20 +259,23 @@ function renderContestList(contests) {
 
     const title = document.createElement("span");
     title.className = "item-title";
-    title.textContent = [contest.season, contest.category, contest.round]
-      .filter(Boolean)
-      .join(" ");
+    title.textContent = getEventTitle(event);
     info.appendChild(title);
 
     const sub = document.createElement("span");
     sub.className = "item-sub";
-    sub.textContent = contest.location || "";
+    const loc = getEventLocation(event);
+    const rounds = event.contests.map((c) => c.round).filter(Boolean);
+    const parts = [];
+    if (loc) parts.push(loc);
+    if (rounds.length > 1) parts.push(rounds.join(" \u00b7 "));
+    sub.textContent = parts.join(" \u2014 ");
     info.appendChild(sub);
 
     row.appendChild(info);
 
-    // Winner pill
-    const winner = getWinner(contest);
+    // Winner pill (from finals)
+    const winner = getEventWinner(event);
     if (winner) {
       const pill = document.createElement("span");
       pill.className = "winner-pill";
@@ -206,12 +283,12 @@ function renderContestList(contests) {
       row.appendChild(pill);
     }
 
-    row.addEventListener("click", () => navigateTo("contest", contest.id));
+    row.addEventListener("click", () => navigateTo("event", event.key));
     container.appendChild(row);
   }
 
-  const n = contests.length;
-  $("#contest-count").textContent = `${n} contest${n !== 1 ? "s" : ""}`;
+  const n = events.length;
+  $("#contest-count").textContent = `${n} event${n !== 1 ? "s" : ""}`;
 }
 
 function getWinner(contest) {
@@ -222,28 +299,53 @@ function getWinner(contest) {
   return group ? group.name : null;
 }
 
-function refreshList() {
-  renderContestList(getFilteredContests());
+function getEventTitle(event) {
+  const parts = [];
+  if (event.season) parts.push(event.season);
+  if (event.district) parts.push(event.district);
+  if (event.category) parts.push(event.category);
+  return parts.join(" ") || "Contest";
 }
 
-// ── Contest Detail ──────────────────────────────────────
-function showContest(id) {
-  const contest = contestsById[id];
-  if (!contest) return;
+function getEventLocation(event) {
+  const loc = event.contests.map((c) => c.location).find(Boolean);
+  if (!loc) return "";
+  return loc.replace(/\n/g, ", ").replace(/,\s*Order\s*$/i, "").trim();
+}
+
+function getEventWinner(event) {
+  // Prefer finals, then last round
+  const finals = event.contests.filter((c) => c.round === "Final");
+  const target = finals.length ? finals[finals.length - 1] : event.contests[event.contests.length - 1];
+  return getWinner(target);
+}
+
+function refreshList() {
+  renderEventList(getFilteredEvents());
+}
+
+// ── Event Detail ────────────────────────────────────────
+function showEvent(eventKey) {
+  const event = eventsIndex[eventKey];
+  if (!event) return;
 
   // Title
-  const titleParts = [contest.year, contest.season, contest.category, contest.round]
-    .filter(Boolean);
+  const titleParts = [event.year, getEventTitle(event)].filter(Boolean);
   $("#contest-title").textContent = titleParts.join(" ");
 
-  // Meta
-  $("#contest-location").textContent = contest.location || "";
-  $("#contest-date").textContent = contest.date || "";
+  // Location
+  $("#contest-location").textContent = getEventLocation(event);
 
-  // Source link
+  // Date
+  const dates = event.contests.map((c) => c.date).filter(Boolean);
+  $("#contest-date").textContent = dates.length > 1
+    ? `${dates[0]} \u2013 ${dates[dates.length - 1]}`
+    : (dates[0] || "");
+
+  // Source link — show only for single-round events
   const sourceLink = $("#contest-source-link");
-  if (contest.sourceUrl) {
-    sourceLink.href = contest.sourceUrl;
+  if (event.contests.length === 1 && event.contests[0].sourceUrl) {
+    sourceLink.href = event.contests[0].sourceUrl;
     sourceLink.hidden = false;
   } else {
     sourceLink.hidden = true;
@@ -251,32 +353,84 @@ function showContest(id) {
 
   // Note
   const noteEl = $("#contest-note");
-  if (contest.note) {
-    noteEl.textContent = contest.note;
+  const notes = event.contests.map((c) => c.note).filter(Boolean);
+  if (notes.length) {
+    noteEl.textContent = [...new Set(notes)].join("; ");
     noteEl.hidden = false;
   } else {
     noteEl.hidden = true;
   }
 
-  // Scores table
-  renderScoresTable(contest);
+  // Render rounds into rounds-container
+  const roundsContainer = $("#rounds-container");
+  roundsContainer.innerHTML = "";
 
-  // Judges
-  renderJudges(contest);
+  for (const contest of event.contests) {
+    const roundSection = document.createElement("div");
+    roundSection.className = "round-section";
 
-  // Annotations
-  renderAnnotations(contest);
+    // Round header (only if multi-round event)
+    if (event.contests.length > 1 && contest.round) {
+      const header = document.createElement("h3");
+      header.className = "round-header";
+      header.textContent = contest.round;
+      if (contest.sourceUrl) {
+        const link = document.createElement("a");
+        link.className = "round-source-link";
+        link.href = contest.sourceUrl;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "Source PDF";
+        header.appendChild(document.createTextNode(" "));
+        header.appendChild(link);
+      }
+      roundSection.appendChild(header);
+    }
 
-  // Appearances
-  renderAppearances(contest);
+    // Scores table
+    const scoresEl = document.createElement("div");
+    scoresEl.className = "round-scores";
+    renderScoresTableInto(scoresEl, contest);
+    roundSection.appendChild(scoresEl);
+
+    // Judges
+    if (contest.judges && contest.judges.length) {
+      const judgesEl = document.createElement("details");
+      judgesEl.className = "content-section collapsible-section round-judges";
+      renderJudgesInto(judgesEl, contest);
+      roundSection.appendChild(judgesEl);
+    }
+
+    // Annotations
+    if (contest.annotations && contest.annotations.length) {
+      const annotEl = document.createElement("details");
+      annotEl.className = "content-section collapsible-section round-annotations";
+      renderAnnotationsInto(annotEl, contest);
+      roundSection.appendChild(annotEl);
+    }
+
+    roundsContainer.appendChild(roundSection);
+  }
+
+  // Appearances — merge from all rounds
+  renderAppearancesForEvent(event);
 
   GreatApp.showView("#contest-view");
 }
 
-function renderScoresTable(contest) {
-  const section = $("#scores-section");
+function showContest(id) {
+  // Find which event contains this contest and show the full event
+  for (const event of Object.values(eventsIndex)) {
+    if (event.contests.some((c) => c.id === Number(id) || c.id === id)) {
+      navigateTo("event", event.key, { pushHistory: true });
+      return;
+    }
+  }
+}
+
+function renderScoresTableInto(container, contest) {
   if (!contest.scores || !contest.scores.length) {
-    section.innerHTML = '<div class="empty-state">No scores available</div>';
+    container.innerHTML = '<div class="empty-state">No scores available</div>';
     return;
   }
 
@@ -296,16 +450,16 @@ function renderScoresTable(contest) {
 
   // Build table
   let html = '<div class="scores-table-wrap"><table class="scores-table"><thead><tr>';
-  html += '<th>Pl</th>';
-  html += '<th>Group</th>';
+  html += "<th>Pl</th>";
+  html += "<th>Group</th>";
   for (const cat of catKeys) {
     html += `<th class="col-num">${escHtml(cat)}</th>`;
   }
   html += '<th class="col-num">Total</th>';
   if (hasSongs) {
-    html += '<th>Songs</th>';
+    html += "<th>Songs</th>";
   }
-  html += '</tr></thead><tbody>';
+  html += "</tr></thead><tbody>";
 
   // Sort by placement (null/0 at end)
   const sorted = [...contest.scores].sort((a, b) => {
@@ -320,7 +474,7 @@ function renderScoresTable(contest) {
     const plClass = placementClass(score.placement);
 
     html += "<tr>";
-    html += `<td class="${plClass}">${score.placement || "—"}</td>`;
+    html += `<td class="${plClass}">${score.placement || "\u2014"}</td>`;
 
     // Group cell — include member names if available
     let groupCell = `<span class="entity-link" data-type="group" data-id="${score.groupId}">${escHtml(groupName)}</span>`;
@@ -334,10 +488,10 @@ function renderScoresTable(contest) {
 
     for (const cat of catKeys) {
       const val = score.categories ? score.categories[cat] : null;
-      html += `<td class="col-num">${val != null ? val : "—"}</td>`;
+      html += `<td class="col-num">${val != null ? val : "\u2014"}</td>`;
     }
 
-    html += `<td class="col-num" style="font-weight:600">${score.total != null ? score.total : "—"}</td>`;
+    html += `<td class="col-num" style="font-weight:600">${score.total != null ? score.total : "\u2014"}</td>`;
 
     if (hasSongs) {
       const songParts = (score.songs || [])
@@ -356,17 +510,11 @@ function renderScoresTable(contest) {
   }
 
   html += "</tbody></table></div>";
-  section.innerHTML = html;
+  container.innerHTML = html;
 }
 
-function renderJudges(contest) {
-  const section = $("#judges-section");
-  const content = $("#judges-content");
-
-  if (!contest.judges || !contest.judges.length) {
-    section.hidden = true;
-    return;
-  }
+function renderJudgesInto(container, contest) {
+  let html = "<summary>Judges</summary><div>";
 
   // Group by role
   const byRole = {};
@@ -376,7 +524,6 @@ function renderJudges(contest) {
     byRole[role].push(j);
   }
 
-  let html = "";
   for (const [role, judges] of Object.entries(byRole)) {
     html += `<div class="judge-role-group">`;
     html += `<div class="judge-role-label">${escHtml(role)}</div>`;
@@ -387,43 +534,43 @@ function renderJudges(contest) {
     html += "</div>";
   }
 
-  content.innerHTML = html;
-  section.hidden = false;
+  html += "</div>";
+  container.innerHTML = html;
 }
 
-function renderAnnotations(contest) {
-  const section = $("#annotations-section");
-  const content = $("#annotations-content");
+function renderAnnotationsInto(container, contest) {
+  let html = "<summary>Annotations</summary><div>";
 
-  if (!contest.annotations || !contest.annotations.length) {
-    section.hidden = true;
-    return;
-  }
-
-  let html = "";
   for (const a of contest.annotations) {
     const marker = a.marker ? `<span class="annotation-marker">${escHtml(a.marker)}</span>` : "";
     html += `<div class="annotation-item">${marker}${escHtml(a.text)}</div>`;
   }
 
-  content.innerHTML = html;
-  section.hidden = false;
+  html += "</div>";
+  container.innerHTML = html;
 }
 
-function renderAppearances(contest) {
+function renderAppearancesForEvent(event) {
   const section = $("#appearances-section");
   const content = $("#appearances-content");
 
-  if (!contest.appearances || !contest.appearances.length) {
+  // Collect all appearances across rounds
+  const allAppearances = [];
+  for (const contest of event.contests) {
+    if (contest.appearances && contest.appearances.length) {
+      allAppearances.push(...contest.appearances);
+    }
+  }
+
+  if (!allAppearances.length) {
     section.hidden = true;
     return;
   }
 
-  const sorted = [...contest.appearances].sort((a, b) => (a.order || 0) - (b.order || 0));
+  const sorted = [...allAppearances].sort((a, b) => (a.order || 0) - (b.order || 0));
 
   let html = '<table class="appearances-table"><thead><tr>';
   html += "<th>#</th><th>Group</th>";
-  // Only show session/time if present
   const hasSession = sorted.some((a) => a.session);
   const hasTime = sorted.some((a) => a.time);
   if (hasSession) html += "<th>Session</th>";
@@ -434,7 +581,7 @@ function renderAppearances(contest) {
     const group = groupsById[app.groupId];
     const groupName = group ? group.name : `Group #${app.groupId}`;
     html += "<tr>";
-    html += `<td>${app.order || "—"}</td>`;
+    html += `<td>${app.order || "\u2014"}</td>`;
     html += `<td><span class="entity-link" data-type="group" data-id="${app.groupId}">${escHtml(groupName)}</span></td>`;
     if (hasSession) html += `<td>${escHtml(app.session || "")}</td>`;
     if (hasTime) html += `<td>${escHtml(app.time || "")}</td>`;
@@ -783,6 +930,9 @@ function navigateTo(type, id, { pushHistory = true } = {}) {
   }
 
   switch (type) {
+    case "event":
+      showEvent(id);
+      break;
     case "contest":
       showContest(id);
       break;
