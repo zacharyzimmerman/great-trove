@@ -1069,6 +1069,11 @@ function mode(arr) {
 
 // ── Service Worker ──────────────────────────────────────
 GreatApp.registerSW("sw.js");
+if (navigator.serviceWorker) {
+  navigator.serviceWorker.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "SW_UPDATED") window.location.reload();
+  });
+}
 
 // ── Init ────────────────────────────────────────────────
 function init() {
