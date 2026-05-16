@@ -472,7 +472,9 @@ function renderScoresTableInto(container, contest) {
   for (const cat of catKeys) {
     html += `<th class="col-num">${escHtml(cat)}</th>`;
   }
-  html += '<th class="col-num">Avg %</th>';
+  // Use percentage if any score has it, otherwise total
+  const hasPct = sorted.some((s) => s.percentage != null);
+  html += `<th class="col-num">${hasPct ? "Avg %" : "Total"}</th>`;
   if (hasSongs) {
     html += "<th>Songs</th>";
   }
@@ -508,8 +510,10 @@ function renderScoresTableInto(container, contest) {
       html += `<td class="col-num">${val != null ? val : "\u2014"}</td>`;
     }
 
-    const pct = score.percentage != null ? score.percentage.toFixed(1) + "%" : (score.total != null ? score.total : "\u2014");
-    html += `<td class="col-num" style="font-weight:600">${pct}</td>`;
+    const scoreVal = hasPct
+      ? (score.percentage != null ? score.percentage.toFixed(1) + "%" : "\u2014")
+      : (score.total != null ? score.total : "\u2014");
+    html += `<td class="col-num" style="font-weight:600">${scoreVal}</td>`;
 
     if (hasSongs) {
       const songParts = (score.songs || [])
