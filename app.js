@@ -465,6 +465,13 @@ function renderScoresTableInto(container, contest) {
     (s) => s.songs && s.songs.length > 0
   );
 
+  // Sort by placement (null/0 at end)
+  const sorted = [...contest.scores].sort((a, b) => {
+    const pa = a.placement || 9999;
+    const pb = b.placement || 9999;
+    return pa - pb;
+  });
+
   // Build table
   let html = '<div class="scores-table-wrap"><table class="scores-table"><thead><tr>';
   html += "<th>Pl</th>";
@@ -479,13 +486,6 @@ function renderScoresTableInto(container, contest) {
     html += "<th>Songs</th>";
   }
   html += "</tr></thead><tbody>";
-
-  // Sort by placement (null/0 at end)
-  const sorted = [...contest.scores].sort((a, b) => {
-    const pa = a.placement || 9999;
-    const pb = b.placement || 9999;
-    return pa - pb;
-  });
 
   for (const score of sorted) {
     const group = groupsById[score.groupId];
