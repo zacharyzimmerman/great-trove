@@ -1,0 +1,863 @@
+{
+  "version": "test",
+  "generated": "2025-01-01",
+  "contests": [
+    {
+      "id": 4210,
+      "year": 2025,
+      "season": "International",
+      "district": null,
+      "category": "Quartet",
+      "round": "Final",
+      "location": null,
+      "date": "July 5, 2025",
+      "sourceUrl": "https://www.harmonize.ws/harmonetreporter/scores/2025/intl/int25fqt.pdf",
+      "note": null,
+      "scores": [
+        {
+          "groupId": 75798,
+          "placement": 1,
+          "total": 6762,
+          "percentage": 93.9,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 378,
+            "PER": 384,
+            "SNG": 383
+          },
+          "songs": [
+            {
+              "name": "Popular (Parody)",
+              "order": 1,
+              "arranger": "Simon Isbäck",
+              "categories": {
+                "MUS": 188,
+                "PER": 190,
+                "SNG": 189
+              }
+            },
+            {
+              "name": "All-American Prophet (Parody)",
+              "order": 2,
+              "arranger": "Rasmus Krigström",
+              "categories": {
+                "MUS": 190,
+                "PER": 194,
+                "SNG": 194
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Sam Molavi",
+              "part": "Baritone"
+            },
+            {
+              "name": "Martin Jangö Fornander",
+              "part": "Bass"
+            },
+            {
+              "name": "David Holst",
+              "part": "Lead"
+            },
+            {
+              "name": "Victor Nilsson",
+              "part": "Tenor"
+            }
+          ]
+        },
+        {
+          "groupId": 75799,
+          "placement": 2,
+          "total": 6730,
+          "percentage": 93.5,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 372,
+            "PER": 378,
+            "SNG": 376
+          },
+          "songs": [
+            {
+              "name": "What A Wonderful World",
+              "order": 1,
+              "arranger": "David Wright",
+              "categories": {
+                "MUS": 186,
+                "PER": 190,
+                "SNG": 188
+              }
+            },
+            {
+              "name": "Five Minutes More",
+              "order": 2,
+              "arranger": "Patrick McAlexander",
+              "categories": {
+                "MUS": 186,
+                "PER": 188,
+                "SNG": 188
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Joe Servidio",
+              "part": "Baritone"
+            },
+            {
+              "name": "Will Downey",
+              "part": "Bass"
+            },
+            {
+              "name": "Dave Ammirata",
+              "part": "Lead"
+            },
+            {
+              "name": "Paul Franek",
+              "part": "Tenor"
+            }
+          ]
+        },
+        {
+          "groupId": 75800,
+          "placement": 3,
+          "total": 6659,
+          "percentage": 92.5,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 368,
+            "PER": 374,
+            "SNG": 368
+          },
+          "songs": [
+            {
+              "name": "At The Swing Cats Ball",
+              "order": 1,
+              "arranger": "Kohl Kitzmiller",
+              "categories": {
+                "MUS": 184,
+                "PER": 184,
+                "SNG": 184
+              }
+            },
+            {
+              "name": "No One Sings Higher Than Me",
+              "order": 2,
+              "arranger": "Anthony Bartholomew",
+              "categories": {
+                "MUS": 184,
+                "PER": 190,
+                "SNG": 184
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Drew Wheaton",
+              "part": "Baritone"
+            },
+            {
+              "name": "Andrew Havens",
+              "part": "Bass"
+            },
+            {
+              "name": "Anthony Colosimo",
+              "part": "Lead"
+            },
+            {
+              "name": "Alex Corson",
+              "part": "Tenor"
+            }
+          ]
+        }
+      ],
+      "judges": [],
+      "annotations": [
+        {
+          "type": "general",
+          "marker": null,
+          "text": "Groups are ranked above in accordance with Article VII of the BHS Contest Rules.",
+          "appliesTo": null
+        }
+      ],
+      "appearances": []
+    },
+    {
+      "id": 4212,
+      "year": 2025,
+      "season": "International",
+      "district": null,
+      "category": "Quartet",
+      "round": "SemiFinal",
+      "location": null,
+      "date": "July 3, 2025",
+      "sourceUrl": "https://www.harmonize.ws/harmonetreporter/scores/2025/intl/int25sqt.pdf",
+      "note": null,
+      "scores": [
+        {
+          "groupId": 75847,
+          "placement": 11,
+          "total": 4154,
+          "percentage": 86.5,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 350,
+            "PER": 342,
+            "SNG": 348
+          },
+          "songs": [
+            {
+              "name": "Some Of These Days",
+              "order": 1,
+              "arranger": "David Wright",
+              "categories": {
+                "MUS": 176,
+                "PER": 172,
+                "SNG": 174
+              }
+            },
+            {
+              "name": "I Can't Believe That You're In Love With Me",
+              "order": 2,
+              "arranger": "Ben Hawker",
+              "categories": {
+                "MUS": 174,
+                "PER": 170,
+                "SNG": 174
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Ben Hawker",
+              "part": "Baritone"
+            },
+            {
+              "name": "Darren Schmidt",
+              "part": "Bass"
+            },
+            {
+              "name": "Ed Schubel",
+              "part": "Lead"
+            },
+            {
+              "name": "Vince Sandroni",
+              "part": "Tenor"
+            }
+          ]
+        },
+        {
+          "groupId": 75848,
+          "placement": 12,
+          "total": 4152,
+          "percentage": 86.5,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 345,
+            "PER": 342,
+            "SNG": 341
+          },
+          "songs": [
+            {
+              "name": "God Only Knows",
+              "order": 1,
+              "arranger": "Jackson Pinder",
+              "categories": {
+                "MUS": 174,
+                "PER": 172,
+                "SNG": 172
+              }
+            },
+            {
+              "name": "When A Man Loves A Woman",
+              "order": 2,
+              "arranger": "Jackson Pinder",
+              "categories": {
+                "MUS": 171,
+                "PER": 170,
+                "SNG": 169
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Jamie Breedon",
+              "part": "Baritone"
+            },
+            {
+              "name": "Jackson Pinder",
+              "part": "Bass"
+            },
+            {
+              "name": "Dustin Guyton",
+              "part": "Lead"
+            },
+            {
+              "name": "Chase Guyton",
+              "part": "Tenor"
+            }
+          ]
+        },
+        {
+          "groupId": 75849,
+          "placement": 13,
+          "total": 4124,
+          "percentage": 85.9,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 349,
+            "PER": 342,
+            "SNG": 347
+          },
+          "songs": [
+            {
+              "name": "So You Wanna Marry Daisy?",
+              "order": 1,
+              "arranger": "Theo Hicks",
+              "categories": {
+                "MUS": 175,
+                "PER": 172,
+                "SNG": 174
+              }
+            },
+            {
+              "name": "The House Is Haunted (By The Echo Of Your Last Goodbye) [Patrick McAl...",
+              "order": 2,
+              "arranger": null,
+              "categories": {
+                "MUS": 174,
+                "PER": 170,
+                "SNG": 173
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Keegan Eich",
+              "part": "Baritone"
+            },
+            {
+              "name": "Michael Bass",
+              "part": "Bass"
+            },
+            {
+              "name": "Aaron Zart",
+              "part": "Lead"
+            },
+            {
+              "name": "Matt Suellentrop",
+              "part": "Tenor"
+            }
+          ]
+        }
+      ],
+      "judges": [],
+      "annotations": [
+        {
+          "type": "general",
+          "marker": null,
+          "text": "Groups not advancing are ranked above in accordance with Article VII of the BHS Contest Rules.",
+          "appliesTo": null
+        }
+      ],
+      "appearances": []
+    },
+    {
+      "id": 4213,
+      "year": 2025,
+      "season": "International",
+      "district": null,
+      "category": "Quartet",
+      "round": "QuarterFinal",
+      "location": null,
+      "date": "July 2, 2025",
+      "sourceUrl": "https://www.harmonize.ws/harmonetreporter/scores/2025/intl/int25qqt.pdf",
+      "note": null,
+      "scores": [
+        {
+          "groupId": 75857,
+          "placement": 21,
+          "total": 1982,
+          "percentage": null,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 663,
+            "PER": 660,
+            "SNG": 659
+          },
+          "songs": [
+            {
+              "name": "The Frim-Fram Sauce",
+              "order": 1,
+              "arranger": "Aaron Dale",
+              "categories": {
+                "MUS": 332,
+                "PER": 331,
+                "SNG": 329
+              }
+            },
+            {
+              "name": "This Heart Of Mine",
+              "order": 2,
+              "arranger": "Brent Graham",
+              "categories": {
+                "MUS": 331,
+                "PER": 329,
+                "SNG": 330
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Ryan Wisniewski",
+              "part": "Baritone"
+            },
+            {
+              "name": "Brent Suver",
+              "part": "Bass"
+            },
+            {
+              "name": "Peter Cunningham",
+              "part": "Lead"
+            },
+            {
+              "name": "Daniel Cooper",
+              "part": "Tenor"
+            }
+          ]
+        },
+        {
+          "groupId": 75858,
+          "placement": 22,
+          "total": 1979,
+          "percentage": null,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 661,
+            "PER": 658,
+            "SNG": 661
+          },
+          "songs": [
+            {
+              "name": "Route 66/Take The 'A' Train",
+              "order": 1,
+              "arranger": "Kohl Kitzmiller",
+              "categories": {
+                "MUS": 329,
+                "PER": 330,
+                "SNG": 331
+              }
+            },
+            {
+              "name": "I Don't Know How To Say Goodbye",
+              "order": 2,
+              "arranger": "Theo Hicks",
+              "categories": {
+                "MUS": 332,
+                "PER": 328,
+                "SNG": 330
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Chris Denton",
+              "part": "Baritone"
+            },
+            {
+              "name": "Donovan Davis",
+              "part": "Bass"
+            },
+            {
+              "name": "Bret Morris",
+              "part": "Lead"
+            },
+            {
+              "name": "Kevin Wagner",
+              "part": "Tenor"
+            }
+          ]
+        },
+        {
+          "groupId": 75859,
+          "placement": 23,
+          "total": 1979,
+          "percentage": null,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 661,
+            "PER": 659,
+            "SNG": 659
+          },
+          "songs": [
+            {
+              "name": "Strawberry Moon",
+              "order": 1,
+              "arranger": "Dan Wessler",
+              "categories": {
+                "MUS": 327,
+                "PER": 336,
+                "SNG": 329
+              }
+            },
+            {
+              "name": "A Major Chord",
+              "order": 2,
+              "arranger": "Dan Wessler",
+              "categories": {
+                "MUS": 334,
+                "PER": 323,
+                "SNG": 330
+              }
+            }
+          ],
+          "members": [
+            {
+              "name": "Emil Pichardo",
+              "part": "Baritone"
+            },
+            {
+              "name": "Ross Valentine",
+              "part": "Bass"
+            },
+            {
+              "name": "Michael Keleshian",
+              "part": "Lead"
+            },
+            {
+              "name": "Jacob Gonzalez",
+              "part": "Tenor"
+            }
+          ]
+        }
+      ],
+      "judges": [],
+      "annotations": [
+        {
+          "type": "general",
+          "marker": null,
+          "text": "Groups not advancing are ranked above in accordance with Article VII of the BHS Contest Rules.",
+          "appliesTo": null
+        }
+      ],
+      "appearances": []
+    },
+    {
+      "id": 119,
+      "year": 2025,
+      "season": "International",
+      "district": null,
+      "category": "Quartet",
+      "round": null,
+      "location": "International Quartet Contest\nDenver, Colorado\nOrder",
+      "date": null,
+      "sourceUrl": "https://www.harmonize.ws/harmonetreporter/scores/2025/intl/int25NextGenVarsityoqt.htm",
+      "note": null,
+      "scores": [
+        {
+          "groupId": 1509,
+          "placement": 1,
+          "total": 74,
+          "percentage": 74.5,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {},
+          "songs": [],
+          "members": []
+        },
+        {
+          "groupId": 1510,
+          "placement": 2,
+          "total": 74,
+          "percentage": 74.2,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {},
+          "songs": [],
+          "members": []
+        },
+        {
+          "groupId": 1511,
+          "placement": 3,
+          "total": 77,
+          "percentage": 77.5,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {},
+          "songs": [],
+          "members": []
+        }
+      ],
+      "judges": [
+        {
+          "role": "ADMINISTRATOR",
+          "number": 1,
+          "name": "Michael Busse",
+          "district": "RMD"
+        },
+        {
+          "role": "ADMINISTRATOR",
+          "number": 5,
+          "name": "David Bowen",
+          "district": "FWD"
+        },
+        {
+          "role": "MUSIC",
+          "number": 2,
+          "name": "Anthony Bartholomew",
+          "district": "SWD"
+        }
+      ],
+      "annotations": [],
+      "appearances": []
+    },
+    {
+      "id": 52,
+      "year": 2026,
+      "season": "Spring",
+      "district": "SWD",
+      "category": "Chorus",
+      "round": "Final",
+      "location": null,
+      "date": "May 1, 2026",
+      "sourceUrl": "https://www.harmonize.ws/harmonetreporter/scores/2026/Spring/Chorus/SWD26DCH.pdf",
+      "note": null,
+      "scores": [
+        {
+          "groupId": 517,
+          "placement": 1,
+          "total": 788,
+          "percentage": null,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 525,
+            "PER": 528,
+            "SNG": 522
+          },
+          "songs": [
+            {
+              "name": "After You've Gone",
+              "order": 1,
+              "arranger": "Don Gray",
+              "categories": {
+                "MUS": 264,
+                "PER": 265,
+                "SNG": 259
+              }
+            },
+            {
+              "name": "Love Me",
+              "order": 2,
+              "arranger": "Aaron Dale",
+              "categories": {
+                "MUS": 261,
+                "PER": 263,
+                "SNG": 263
+              }
+            }
+          ],
+          "members": []
+        },
+        {
+          "groupId": 68659,
+          "placement": 1,
+          "total": 788,
+          "percentage": null,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 525,
+            "PER": 528,
+            "SNG": 522
+          },
+          "songs": [
+            {
+              "name": "After You've Gone",
+              "order": 1,
+              "arranger": "Don Gray",
+              "categories": {
+                "MUS": 264,
+                "PER": 265,
+                "SNG": 259
+              }
+            },
+            {
+              "name": "Love Me",
+              "order": 2,
+              "arranger": "Aaron Dale",
+              "categories": {
+                "MUS": 261,
+                "PER": 263,
+                "SNG": 263
+              }
+            }
+          ],
+          "members": []
+        },
+        {
+          "groupId": 76962,
+          "placement": 1,
+          "total": 788,
+          "percentage": null,
+          "numOnStage": null,
+          "cumulativeScore": null,
+          "note": null,
+          "categories": {
+            "MUS": 525,
+            "PER": 528,
+            "SNG": 522
+          },
+          "songs": [
+            {
+              "name": "After You've Gone",
+              "order": 1,
+              "arranger": "Don Gray",
+              "categories": {
+                "MUS": 264,
+                "PER": 265,
+                "SNG": 259
+              }
+            },
+            {
+              "name": "Love Me",
+              "order": 2,
+              "arranger": "Aaron Dale",
+              "categories": {
+                "MUS": 261,
+                "PER": 263,
+                "SNG": 263
+              }
+            }
+          ],
+          "members": []
+        }
+      ],
+      "judges": [],
+      "annotations": [
+        {
+          "type": "general",
+          "marker": null,
+          "text": "Groups are listed above by total points and in accordance with Article VII of the BHS Contest Rules.",
+          "appliesTo": null
+        }
+      ],
+      "appearances": []
+    }
+  ],
+  "groups": {
+    "517": {
+      "name": "Senior Moments",
+      "city": null,
+      "state": null,
+      "type": "chorus"
+    },
+    "1509": {
+      "name": "The Quin-Tones",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "1510": {
+      "name": "Nostalgia",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "1511": {
+      "name": "Talk of the Town",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "68659": {
+      "name": "Senior Moments",
+      "city": null,
+      "state": null,
+      "type": "chorus"
+    },
+    "75798": {
+      "name": "Lemon Squeezy",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75799": {
+      "name": "Gimme Four",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75800": {
+      "name": "First Take",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75847": {
+      "name": "Pratt Street Power",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75848": {
+      "name": "Rooftop Records",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75849": {
+      "name": "Fleet Street",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75857": {
+      "name": "Opus IV",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75858": {
+      "name": "Studio Talk",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "75859": {
+      "name": "The Seventh Variety",
+      "city": null,
+      "state": null,
+      "type": "quartet"
+    },
+    "76962": {
+      "name": "Senior Moments",
+      "city": null,
+      "state": null,
+      "type": "chorus"
+    }
+  }
+}

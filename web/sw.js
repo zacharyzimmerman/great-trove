@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v0.2.7";
+const CACHE_VERSION = "v0.2.8";
 const CACHE_NAME = "great-trove-" + CACHE_VERSION;
 const ASSETS = [
   "./",
